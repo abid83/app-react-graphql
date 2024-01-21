@@ -4,53 +4,59 @@ import React, { useState } from 'react';
 import './App.css';
 
 function App() {
-  const [input, setInput] = useState('');
-  const [result, setResult] = useState('');
+  const [items, setItems] = useState([]);
+  const [itemName, setItemName] = useState('');
+  const [quantity, setQuantity] = useState('');
+  const [price, setPrice] = useState('');
 
-  const handleClick = (value) => {
-    if (value === '=') {
-      try {
-        setResult(eval(input).toString());
-      } catch (error) {
-        setResult('Error');
-      }
-    } else if (value === 'C') {
-      setInput('');
-      setResult('');
-    } else {
-      setInput((prevInput) => prevInput + value);
+  const handleAddItem = () => {
+    if (itemName && quantity && price) {
+      const newItem = {
+        id: new Date().getTime(),
+        name: itemName,
+        quantity: parseInt(quantity, 10),
+        price: parseFloat(price),
+      };
+
+      setItems((prevItems) => [...prevItems, newItem]);
+      setItemName('');
+      setQuantity('');
+      setPrice('');
     }
+  };
+
+  const handleDeleteItem = (itemId) => {
+    setItems((prevItems) => prevItems.filter((item) => item.id !== itemId));
   };
 
   return (
     <div className="App">
-      <div className="calculator">
-        <div className="display">
-          <div className="input">{input}</div>
-          <div className="result">{result}</div>
+      <div className="inventory">
+        <div className="form">
+          <label>
+            Item Name:
+            <input type="text" value={itemName} onChange={(e) => setItemName(e.target.value)} />
+          </label>
+          <label>
+            Quantity:
+            <input type="number" value={quantity} onChange={(e) => setQuantity(e.target.value)} />
+          </label>
+          <label>
+            Price:
+            <input type="number" value={price} onChange={(e) => setPrice(e.target.value)} />
+          </label>
+          <button onClick={handleAddItem}>Add Item</button>
         </div>
-        <div className="buttons">
-          <button onClick={() => handleClick('7')}>7</button>
-          <button onClick={() => handleClick('8')}>8</button>
-          <button onClick={() => handleClick('9')}>9</button>
-          <button onClick={() => handleClick('/')}>/</button>
-
-          <button onClick={() => handleClick('4')}>4</button>
-          <button onClick={() => handleClick('5')}>5</button>
-          <button onClick={() => handleClick('6')}>6</button>
-          <button onClick={() => handleClick('*')}>*</button>
-
-          <button onClick={() => handleClick('1')}>1</button>
-          <button onClick={() => handleClick('2')}>2</button>
-          <button onClick={() => handleClick('3')}>3</button>
-          <button onClick={() => handleClick('-')}>-</button>
-
-          <button onClick={() => handleClick('0')}>0</button>
-          <button onClick={() => handleClick('.')}>.</button>
-          <button onClick={() => handleClick('=')}>=</button>
-          <button onClick={() => handleClick('+')}>+</button>
-
-          <button onClick={() => handleClick('C')}>C</button>
+        <div className="item-list">
+          <h2>Inventory</h2>
+          <ul>
+            {items.map((item) => (
+              <li key={item.id}>
+                <span>{item.name} - Quantity: {item.quantity} - Price: ${item.price.toFixed(2)}</span>
+                <button onClick={() => handleDeleteItem(item.id)}>Delete</button>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </div>
@@ -58,3 +64,4 @@ function App() {
 }
 
 export default App;
+
